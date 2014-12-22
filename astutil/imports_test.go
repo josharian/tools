@@ -195,6 +195,88 @@ type T struct {
 }
 `,
 	},
+	{
+		name: "issue 8729 import C",
+		pkg:  "time",
+		in: `package main
+
+import "C"
+
+// comment
+type T time.Time
+`,
+		out: `package main
+
+import "C"
+import "time"
+
+// comment
+type T time.Time
+`,
+	},
+	{
+		name: "issue 8729 empty import",
+		pkg:  "time",
+		in: `package main
+
+import ()
+
+// comment
+type T time.Time
+`,
+		out: `package main
+
+import "time"
+
+// comment
+type T time.Time
+`,
+	},
+	{
+		name: "issue 8729 comment on package line",
+		pkg:  "time",
+		in: `package main // comment
+
+type T time.Time
+`,
+		out: `package main // comment
+import "time"
+
+type T time.Time
+`,
+	},
+	{
+		name: "issue 8729 comment after package",
+		pkg:  "time",
+		in: `package main
+// comment
+
+type T time.Time
+`,
+		out: `package main
+
+import "time"
+
+// comment
+
+type T time.Time
+`,
+	},
+	{
+		name: "issue 8729 comment before and on package line",
+		pkg:  "time",
+		in: `// comment before
+package main // comment on
+
+type T time.Time
+`,
+		out: `// comment before
+package main // comment on
+import "time"
+
+type T time.Time
+`,
+	},
 }
 
 func TestAddImport(t *testing.T) {
@@ -229,6 +311,34 @@ import (
 )
 `
 	if got := print(t, "doubleimport", file); got != want {
+		t.Errorf("got: %s\nwant: %s", got, want)
+	}
+}
+
+// Part of issue 8729.
+func TestDoubleAddImportWithDeclComment(t *testing.T) {
+	file := parse(t, "doubleimport", `package main
+
+import (
+)
+
+// comment
+type I int
+`)
+	// The AddImport order here matters.
+	AddImport(fset, file, "golang.org/x/tools/astutil")
+	AddImport(fset, file, "os")
+	want := `package main
+
+import (
+	"golang.org/x/tools/astutil"
+	"os"
+)
+
+// comment
+type I int
+`
+	if got := print(t, "doubleimport_with_decl_comment", file); got != want {
 		t.Errorf("got: %s\nwant: %s", got, want)
 	}
 }
