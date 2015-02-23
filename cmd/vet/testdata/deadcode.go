@@ -392,6 +392,7 @@ func _() int {
 		print(2)
 		panic("abc")
 		println() // ERROR "unreachable code"
+	default:
 	}
 }
 
@@ -399,6 +400,9 @@ func _() int {
 	print(1)
 	select {
 	case <-c:
+		print(2)
+		panic("abc")
+	case <-c2:
 		print(2)
 		panic("abc")
 	}
@@ -413,6 +417,7 @@ func _() int {
 		for {
 		}
 		println() // ERROR "unreachable code"
+	default:
 	}
 }
 
@@ -420,6 +425,10 @@ func _() int {
 	print(1)
 	select {
 	case <-c:
+		print(2)
+		for {
+		}
+	case <-c2:
 		print(2)
 		for {
 		}
@@ -485,6 +494,8 @@ func _() int {
 	print(1)
 	select {
 	case <-c:
+		print(2)
+	case <-c2:
 		print(2)
 	}
 	println() // ok
@@ -532,6 +543,10 @@ func _() int {
 		print(2)
 		panic("abc")
 		break // ERROR "unreachable code"
+	case <-c2:
+		print(2)
+		panic("abc")
+		break // ERROR "unreachable code"
 	}
 	println() // ok
 }
@@ -541,6 +556,11 @@ func _() int {
 L:
 	select {
 	case <-c:
+		print(2)
+		for {
+			break L
+		}
+	case <-c2:
 		print(2)
 		for {
 			break L
@@ -1445,6 +1465,10 @@ var _ = func() int {
 		print(2)
 		panic("abc")
 		println() // ERROR "unreachable code"
+	case <-c2:
+		print(2)
+		panic("abc")
+		println() // ERROR "unreachable code"
 	}
 }
 
@@ -1452,6 +1476,9 @@ var _ = func() int {
 	print(1)
 	select {
 	case <-c:
+		print(2)
+		panic("abc")
+	case <-c2:
 		print(2)
 		panic("abc")
 	}
@@ -1466,6 +1493,7 @@ var _ = func() int {
 		for {
 		}
 		println() // ERROR "unreachable code"
+	default:
 	}
 }
 
@@ -1473,6 +1501,10 @@ var _ = func() int {
 	print(1)
 	select {
 	case <-c:
+		print(2)
+		for {
+		}
+	case <-c2:
 		print(2)
 		for {
 		}
@@ -1538,6 +1570,8 @@ var _ = func() int {
 	print(1)
 	select {
 	case <-c:
+		print(2)
+	case <-c2:
 		print(2)
 	}
 	println() // ok
@@ -1585,6 +1619,10 @@ var _ = func() int {
 		print(2)
 		panic("abc")
 		break // ERROR "unreachable code"
+	case <-c2:
+		print(2)
+		panic("abc")
+		break // ERROR "unreachable code"
 	}
 	println() // ok
 }
@@ -1594,6 +1632,11 @@ var _ = func() int {
 L:
 	select {
 	case <-c:
+		print(2)
+		for {
+			break L
+		}
+	case <-c2:
 		print(2)
 		for {
 			break L
