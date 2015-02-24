@@ -530,6 +530,8 @@ func _() int {
 func _() int {
 	print(1)
 	select {
+	case <-c:
+		break
 	default:
 		break
 	}
@@ -1606,6 +1608,8 @@ var _ = func() int {
 var _ = func() int {
 	print(1)
 	select {
+	case <-c:
+		break
 	default:
 		break
 	}

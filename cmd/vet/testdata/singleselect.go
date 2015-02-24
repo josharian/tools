@@ -21,5 +21,8 @@ func SingleSelectTests() {
 	select { // ERROR "select has only single case and no default"
 	case ch2 <- true:
 	}
+	select { // ERROR "select is useless with only default case"
+	default:
+	}
 	select {}
 }

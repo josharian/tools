@@ -50,19 +50,19 @@ func init() {
 func checkSelectCases(f *File, node ast.Node) {
 	n := node.(*ast.SelectStmt)
 
+	defaults := false
 	cases := 0
 	for _, condition := range n.Body.List {
 		c := condition.(*ast.CommClause)
 
-		switch c := c.Comm.(type) {
+		switch c.Comm.(type) {
 		case *ast.SendStmt:
 			// chan<-
 		case *ast.ExprStmt:
 			// <-chan
 		case nil:
-			// select is not useless
-			// has default case
-			return
+			// select has default case
+			defaults = true
 		}
 		cases++
 	}
@@ -74,5 +74,9 @@ func checkSelectCases(f *File, node ast.Node) {
 		return
 	}
 
-	f.Bad(n.Pos(), "select has only single case and no default")
+	if defaults {
+		f.Bad(n.Pos(), "select is useless with only default case")
+	} else {
+		f.Bad(n.Pos(), "select has only single case and no default")
+	}
 }
